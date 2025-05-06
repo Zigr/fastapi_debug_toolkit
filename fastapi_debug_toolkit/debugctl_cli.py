@@ -67,7 +67,6 @@ def status():
             # If the line is not found, we assume it's disabled
             status = False
 
-    print(status)
     typer.echo(
         f"🔍 Debug routes currently: {'✅ ENABLED' if status  else '❌ DISABLED'}"
     )
