@@ -3,8 +3,10 @@
 ---
 
 Debug and diagnostics toolkit for FastAPI apps based on [full-stack-fastapi-template](https://github.com/fastapi/full-stack-fastapi-template/tree/master)
-It is assumed you know the matter.
-Dockerfile changes are not provided yet.
+Provided as editable installable Python module.
+
+---
+⚠️ If installed **as is** from the **current repo**, Dockerfile **changes** should be made as well.
 
 ---
 
@@ -14,8 +16,8 @@ Dockerfile changes are not provided yet.
 curl http://127.0.0.1:8000/debug/routes         # List all registered routes and tags
 curl http://127.0.0.1:8000/debug/config         # Expose current app settings (DEV ONLY)
 curl http://127.0.0.1:8000/debug/middlewares    # List all middleware classes (DEV ONLY)
-curl http://127.0.0.1:8000/debug/events         #List startup and shutdown event handlers (DEV ONLY)
-curl http://127.0.0.1:8000/debug/mounts         #List all
+curl http://127.0.0.1:8000/debug/events         # List startup and shutdown event handlers (DEV ONLY)
+curl http://127.0.0.1:8000/debug/mounts         # LList all mounted sub-apps (DEV ONLY)
 
 ```
 
