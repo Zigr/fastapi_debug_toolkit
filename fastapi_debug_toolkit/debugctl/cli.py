@@ -1,24 +1,26 @@
 from pathlib import Path
 
 import typer
+from dotenv import load_dotenv
 from fastapi import HTTPException
-
-from app.core.config import get_app_dir
 
 """CLI to manage FastAPI debug routes.
 This CLI allows you to enable or disable debug routes in your FastAPI application.
 It reads and writes to a .env file in the current directory to manage the state of debug routes.
 """
 
-CONFIG_FILE = Path(get_app_dir().parent.parent / ".env")
-
+CONFIG_FILE = Path(__file__).parent.parent.parent.parent.parent / ".env"
+print(f"Config file: {CONFIG_FILE}")
+load_dotenv(dotenv_path=CONFIG_FILE, override=True)
 app = typer.Typer(help="CLI to manage FastAPI debug routes")
 
 
 def update_flag(value: bool):
     if not CONFIG_FILE.exists():
-        CONFIG_FILE.write_text("")
-
+        print(
+            f"Config file does not exist. Creating a new one at {CONFIG_FILE}.",
+            CONFIG_FILE,
+        )
     lines = CONFIG_FILE.read_text().splitlines()
     updated = False
     new_lines = []
@@ -55,7 +57,7 @@ def status():
     """Show current debug route status"""
 
     if not CONFIG_FILE.exists():
-        raise HTTPException(status_code=403, detail="Access denied in production")
+        raise HTTPException(status_code=403, detail="Access denied")
 
     lines = CONFIG_FILE.read_text().splitlines()
     status = False

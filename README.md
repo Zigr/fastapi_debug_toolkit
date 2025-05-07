@@ -3,7 +3,7 @@
 ---
 
 Debug and diagnostics toolkit for FastAPI apps based on [full-stack-fastapi-template](https://github.com/fastapi/full-stack-fastapi-template/tree/master)
-Provided as editable installable Python module.
+Provided as editable installable Python module. The is packaged with [uv](https://docs.astral.sh/uv/) package and project manager.
 
 ---
 ⚠️ If installed **as is** from the **current repo**, Dockerfile **changes** should be made as well.
@@ -26,9 +26,9 @@ curl http://127.0.0.1:8000/debug/mounts         # LList all mounted sub-apps (DE
 ## Enable / disable routes debug in production
 
 ```bash
-debugctl_cli status
-debugctl_cli enable
-debugctl_cli disable
+debugctl status
+debugcti enable
+debugcti disable
 
 ```
 
