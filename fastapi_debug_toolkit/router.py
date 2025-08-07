@@ -2,7 +2,7 @@ from typing import Any
 
 from fastapi import APIRouter, HTTPException, Request
 
-from app.core.config import settings
+from app.core.config import settings # type: ignore
 
 router = APIRouter(tags=["debug"])
 
