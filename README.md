@@ -5,10 +5,30 @@
 Debug and diagnostics toolkit for FastAPI apps based on [full-stack-fastapi-template](https://github.com/fastapi/full-stack-fastapi-template/tree/master)
 Provided as editable installable Python module. The is packaged with [uv](https://docs.astral.sh/uv/) package and project manager.
 
+## Installation
+
 ---
 ⚠️ If installed **as is** from the **current repo**, Dockerfile **changes** should be made as well.
 
 ---
+
+### Using GNU make tool and Git
+
+```bash
+cd ./backend
+make help
+make submodule-add PACKAGE_REPO=https://github.com/Zigr/fastapi_debug_toolkit.git PACKAGE_PATH=./packages/fastapi-debug-toolkit
+make submodule-init
+
+```
+
+### Install as editable package
+
+```bash
+make install PACKAGE_PATH=./packages/fastapi-debug-toolkit
+make uv-sync
+
+```
 
 ## Debug some configuration
 

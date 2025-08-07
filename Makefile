@@ -1,8 +1,7 @@
-include ../Makefile.setup
-include ../Makefile.scm
+-include ./Makefile.scm ./Makefile.setup
 
 .PHONY: help
-help: help-debug help-setup help-scm
+help: help-debug help-scm help-setup
 
 #
 help-debug:
