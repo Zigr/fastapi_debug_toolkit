@@ -1,8 +1,10 @@
-install:
-	pip install -e .
+include ../Makefile.setup
+include ../Makefile.scm
 
-test:
-	pytest
+.PHONY: help
+help: help-debug help-setup help-scm
 
-lint:
-	flake8 fastapi_debug_toolkit
+#
+help-debug:
+	@echo "FASTAPI_DEBUG_TOOLKIT: Available targets:"
+	@echo "  None"

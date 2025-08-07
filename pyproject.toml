@@ -5,6 +5,7 @@ description = "Debug and diagnostics toolkit for FastAPI"
 authors = [{ name = "ZIgr", email = "zaporozhets.igor@gmail.com" }]
 dependencies = ["fastapi", "pydantic", "typer", "jinja2", "python-dotenv"]
 readme = "README.md"
+requires-python = ">=3.10"
 
 [project.scripts]
 debugctl = "fastapi_debug_toolkit.debugctl.cli:app"
