@@ -7,24 +7,17 @@ CYAN=\033[36m
 MAGENTA=\033[35m
 RESET=\033[0m
 LINE=-----------------------------
+# Add the requirements to the specified dependency group, --group dev
+#CUSTOM_DEPS="--group dev"
+CUSTOM_DEPS=""
 
-CUSTOM_DEPS="[dev]"
+# Install requirements (editable, dev) and sync uv.lock file
+# Customize PKG_MANAGER if needed, e.g. to use pip instead of uv
+.PHONY: help-setup install lint test test-watch test-clean setup setup-full
 
-# Install requirements (editable, dev)
+# Install & Sync dependencies with uv.lock for the given package
 install:
-	$(PKG_MANAGER) pip install -e .$(CUSTOM_DEPS)
-
-# Sync dependencies with uv for a given package
-# This is useful if you have a custom package manager or need to sync dependencies
-# with a specific tool like uv.
-# Customize the PKG_MANAGER variable if needed.
-# Example: make uv-sync
-# This will run `uv sync --inexact` to sync dependencies.
-# Make sure to have uv installed in your environment.
-# If you use a different package manager, change the PKG_MANAGER variable accordingly.
-# If you don't need this, you can remove this target.
-uv-sync:
-	$(PKG_MANAGER) sync --inexact
+	$(PKG_MANAGER) uv add --editable $(PACKAGE_PATH)
 
 # Lint using Ruff (or flake8)
 lint:
@@ -33,12 +26,12 @@ lint:
 # Test commands
 # Run tests once
 test:
-	$(PKG_MANAGER) pip install .[test]
+	$(PKG_MANAGER) pip install . --group test
 	pytest
 
 # Watch files & rerun on changes (optional: with pytest-watch)
 test-watch:
-	$(PKG_MANAGER) pip install .[test] pytest-watch
+	$(PKG_MANAGER) pip install --group test . pytest-watch
 	ptw --ext .py
 
 # Clean __pycache__ and .pytest_cache
@@ -49,8 +42,8 @@ test-clean:
 # Setup: install, format, lint, test
 setup: install lint test
 
-# Make full installation: install + uv-sync
-setup-all: submodule-add init install uv-sync lint test
+# Make full installation: submodule-add install lint test
+setup-full: submodule-add install lint test
 
 list_user_variables:
 	@echo "Variables in Makefile:"
@@ -59,27 +52,17 @@ list_user_variables:
 	@echo "PKG_MANAGER = $(PKG_MANAGER)"
 	@echo "CUSTOM_DEPS = $(CUSTOM_DEPS)"
 
-
-debug:
-	@echo SHELL = $(SHELL)
-	@echo .ONESHELL = $(.ONESHELL)
-	# A special automatic variable in GNU Make that holds a list of all the Makefiles read so far, in order.
-	# Each time a Makefile is loaded (including via include), its name is appended to this list.
-	@echo MAKEFILE_LIST =  $(MAKEFILE_LIST)
-#
-
+.PHONY: help-setup
 help-setup:
 	@printf "${BOLD}SETUP: Available targets:${RESET}\n"
 	@printf "${CYAN}$(LINE)${RESET}\n"
 	@echo "  install          	- Install dependencies (editable + $(CUSTOM_DEPS))"
-	@echo "  uv-sync	       	- Sync dependencies with uv for the given package"
 	@echo "  lint             	- Lint code with Ruff"
 	@echo "  test             	- Run tests once with pytest"
 	@echo "  test-watch       	- Watch files & rerun on changes (optional: with pytest-watch)"
 	@echo "  test-clean       	- Clean cache files, eg. __pycache__ and .pytest_cache"
 	@echo "  setup            	- Install and check everything"
-	@echo "  setup-all        	- Full setup: install + uv-sync + lint + test"
-	@echo "  debug            	- Print debug information about the Makefile and environment"
+	@echo "  setup-full        	- Make full installation: submodule-add install lint test"
 	@echo "  list_user_variables	- List user-defined variables in Makefile"
 	@echo "  help             	- Show this help message"
 	@echo

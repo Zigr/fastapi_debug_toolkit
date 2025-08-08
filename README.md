@@ -15,10 +15,14 @@ Provided as editable installable Python module. The is packaged with [uv](https:
 ### Using GNU make tool and Git
 
 ```bash
-cd ./backend
-make help
-make submodule-add PACKAGE_REPO=https://github.com/Zigr/fastapi_debug_toolkit.git PACKAGE_PATH=./packages/fastapi-debug-toolkit
-make submodule-init
+cd ./ai-agent
+make --makefile=./backend/app/packages/fastapi_debug_toolkit/Makefile -I $(pwd)/backend/app/packages/fastapi_debug_toolkit help
+make \
+ --makefile=./backend/app/packages/fastapi_debug_toolkit/Makefile  \
+ -I $(pwd)/backend/app/packages/fastapi_debug_toolkit \
+  submodule-add \
+  PACKAGE_REPO=https://github.com/Zigr/fastapi_debug_toolkit/ \
+  PACKAGE_PATH=./backend/packages/fastapi-debug-toolkit
 
 ```
 
