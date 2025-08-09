@@ -1,17 +1,20 @@
 from pathlib import Path
 
 import typer
-from dotenv import load_dotenv
 from fastapi import HTTPException
+
+from fastapi_debug_toolkit.debugctl.util import get_project_root
 
 """CLI to manage FastAPI debug routes.
 This CLI allows you to enable or disable debug routes in your FastAPI application.
 It reads and writes to a .env file in the current directory to manage the state of debug routes.
 """
+project_root: Path = get_project_root()
+# print(project_root)
 
-CONFIG_FILE = Path(__file__).parent.parent.parent.parent.parent / ".env"
+CONFIG_FILE = Path(project_root) / ".env"
 print(f"Config file: {CONFIG_FILE}")
-load_dotenv(dotenv_path=CONFIG_FILE, override=True)
+# load_dotenv(dotenv_path=CONFIG_FILE, override=True)
 app = typer.Typer(help="CLI to manage FastAPI debug routes")
 
 
