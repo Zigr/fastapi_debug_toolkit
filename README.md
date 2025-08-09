@@ -43,14 +43,25 @@ make install;
 
 #### Install as editable package with user defined variables
 
-⚠️ The best way to install deps with customizations is to examine $(PROJECT_BASE)/Makefile file.
+⚠️ The best way to install deps with customizations is to examine $(PROJECT_BASE)/Makefile file. Or use:
+
+```bash
+make help
+# OR which is equivalnent to
+make
+# OR
+make list-user-variables
+# OR
+make debug-vvv
+
+```
 
 See available user defined variables:
 
 ```bash
 make list-user-variables
-# OR
-make debug-verbose
+# OR debug-verbose
+make debug-vvv
 
 ```
 
@@ -106,18 +117,26 @@ debugcti disable
 
 ## Init in the application
 
-```python
+```python(main script)
 ... # your imports
 
-from fastapi_debug_toolkit import debug_router
+try:
+    from fastapi_debug_toolkit import debug_router
+    # Code that uses desired_package can go here
+except ImportError:
+    # Code to execute if desired_package is not found
+    print("desired_package not found. Functionality may be limited.")
+    debug_router = None  # Or provide a mock object/alternative implementation
+
 
 ... # your code
 
-if settings.DEBUG_ROUTES_ENABLED:
-    include_debug_docs = settings.ENVIRONMENT == "local"
-    app.include_router(
-        debug_router, prefix="/debug", include_in_schema=include_debug_docs
-    )
+if debug_router:
+    if settings.DEBUG_ROUTES_ENABLED:
+        include_debug_docs = settings.ENVIRONMENT == "local"
+        app.include_router(
+            debug_router, prefix="/debug", include_in_schema=include_debug_docs
+        )
 ```
 
 ---
