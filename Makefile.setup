@@ -52,7 +52,6 @@ list_user_variables:
 	@echo "PKG_MANAGER = $(PKG_MANAGER)"
 	@echo "CUSTOM_DEPS = $(CUSTOM_DEPS)"
 
-.PHONY: help-setup
 help-setup:
 	@printf "${BOLD}SETUP: Available targets:${RESET}\n"
 	@printf "${CYAN}$(LINE)${RESET}\n"
