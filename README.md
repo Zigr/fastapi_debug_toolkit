@@ -65,6 +65,13 @@ docker compose watch;
 
 ```
 
+## Testing
+
+```bash
+pytest backend/packages/fastapi-debug-toolkit/tests/
+
+```
+
 ## Use: debug some configuration
 
 Let us assume we have backend service running after previous step.
@@ -102,7 +109,7 @@ debugcti disable
 ```python
 ... # your imports
 
-from fastapi_debug_toolkit.fastapi_debug_toolkit import debug_router
+from fastapi_debug_toolkit import debug_router
 
 ... # your code
 
