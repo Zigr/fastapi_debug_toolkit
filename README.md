@@ -12,29 +12,70 @@ Provided as editable installable Python module. The is packaged with [uv](https:
 
 ---
 
-### Using GNU make tool and Git
+### Using GNU make tool and Git with fastapi_debug_toolkit in place
+
+Assume, we have a project root folder with $PROJECT_BASE in **./ai-agent**
 
 ```bash
-cd ./ai-agent
-make --makefile=./backend/app/packages/fastapi_debug_toolkit/Makefile -I $(pwd)/backend/app/packages/fastapi_debug_toolkit help
-make \
- --makefile=./backend/app/packages/fastapi_debug_toolkit/Makefile  \
- -I $(pwd)/backend/app/packages/fastapi_debug_toolkit \
-  submodule-add \
-  PACKAGE_REPO=https://github.com/Zigr/fastapi_debug_toolkit/ \
-  PACKAGE_PATH=./backend/packages/fastapi-debug-toolkit
+export PROJECT_BASE="$(pwd)/ai-agent" && cd $PROJECT_BASE;
+<!-- # We do not have repo installed in a local path
+#  make --makefile=./backend/app/packages/fastapi_debug_toolkit/Makefile -I $(pwd)/backend/app/packages/fastapi_debug_toolkit help
+# make \
+# --makefile=./backend/app/packages/fastapi_debug_toolkit/Makefile  \
+# -I $(pwd)/backend/app/packages/fastapi_debug_toolkit \
+#  submodule-add --force \
+#  PACKAGE_REPO=https://github.com/Zigr/fastapi_debug_toolkit/ \
+#  PACKAGE_PATH=./backend/packages/fastapi-debug-toolkit -->
 
 ```
 
-### Install as editable package
+### Instal from Git repo
+
+Assuming we did the steps above and we are in PROJECT_BASE directory:
+
+#### With defaults
 
 ```bash
-make install PACKAGE_PATH=./packages/fastapi-debug-toolkit
-make uv-sync
+make submodule-add;
+make install;
 
 ```
 
-## Debug some configuration
+#### Install as editable package with user defined variables
+
+⚠️ The best way to install deps with customizations is to examine $(PROJECT_BASE)/Makefile file.
+
+See available user defined variables:
+
+```bash
+make list-user-variables
+# OR
+make debug-verbose
+
+```
+
+And then define required variables.
+Example:
+
+```bash
+make list-user-variables;
+make submodule-add PACKAGE_REPO=https://github.com/Zigr/fastapi_debug_toolkit   PACKAGE_PATH=./backend/packages/fastapi-debug-toolkit;
+make install PACKAGE_PATH="./packages/fastapi-debug-toolkit";
+docker compose watch;
+
+```
+
+## Use: debug some configuration
+
+Let us assume we have backend service running after previous step.
+
+```bash
+docker compose ps;
+docker compose logs backend;
+
+```
+
+Then we may ckeckdebug endpoints:
 
 ```bash
 curl http://127.0.0.1:8000/debug/routes         # List all registered routes and tags
