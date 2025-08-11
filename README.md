@@ -70,7 +70,7 @@ Example:
 
 ```bash
 make list-user-variables;
-make submodule-add PACKAGE_REPO=https://github.com/Zigr/fastapi_debug_toolkit   PACKAGE_PATH=./backend/packages/fastapi-debug-toolkit;
+make submodule-add PACKAGE_REPO=https://github.com/Zigr/fastapi_debug_toolkit PACKAGE_PATH=./backend/packages/fastapi-debug-toolkit;
 make install PACKAGE_PATH="./packages/fastapi-debug-toolkit";
 docker compose watch;
 

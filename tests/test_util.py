@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 
-from fastapi_debug_toolkit.debugctl.util import get_project_root
+from fastapi_debug_toolkit.util import get_project_root
 
 
 def test_get_project_root():

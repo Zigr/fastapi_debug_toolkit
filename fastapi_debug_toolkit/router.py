@@ -3,7 +3,7 @@ from typing import Any
 from fastapi import APIRouter, HTTPException, Request
 
 # from app.core.config import settings
-from fastapi_debug_toolkit.debugctl.util import get_env_settings
+from fastapi_debug_toolkit.util import get_env_settings
 
 settings = get_env_settings()
 
@@ -18,11 +18,13 @@ router = APIRouter(tags=["debug"])
 # but without the documentation in the OpenAPI schema.
 # This is to prevent exposing sensitive information
 # to the public and to avoid cluttering the API documentation.
-include_debug_docs = settings["ENVIRONMENT"] == "local"
+include_debug_docs = (
+    isinstance(settings, dict) and settings.get("ENVIRONMENT") == "local"
+)
 
 
 def dev_only():
-    if settings["ENVIRONMENT"] != "local":
+    if isinstance(settings, dict) and settings.get("ENVIRONMENT") != "local":
         raise HTTPException(status_code=403, detail="Access denied in production")
 
 

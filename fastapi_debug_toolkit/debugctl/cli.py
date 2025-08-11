@@ -3,28 +3,30 @@ from pathlib import Path
 import typer
 from fastapi import HTTPException
 
-from fastapi_debug_toolkit.debugctl.util import get_project_root
+from fastapi_debug_toolkit.util import get_backend_folder
 
 """CLI to manage FastAPI debug routes.
 This CLI allows you to enable or disable debug routes in your FastAPI application.
 It reads and writes to a .env file in the current directory to manage the state of debug routes.
 """
-project_root: Path = get_project_root()
-# print(project_root)
+backend: Path = get_backend_folder()
+# print(backend)
 
-CONFIG_FILE = Path(project_root) / ".env"
-print(f"Config file: {CONFIG_FILE}")
-# load_dotenv(dotenv_path=CONFIG_FILE, override=True)
+ENV_FILE = Path(backend) / ".env"
+# print(f"Env file: {ENV_FILE}")
+# load_dotenv(dotenv_path=ENV_FILE, override=True)
 app = typer.Typer(help="CLI to manage FastAPI debug routes")
 
 
 def update_flag(value: bool):
-    if not CONFIG_FILE.exists():
+    if not ENV_FILE.exists():
         print(
-            f"Config file does not exist. Creating a new one at {CONFIG_FILE}.",
-            CONFIG_FILE,
+            f"Config file does not exist. Creating a new one at {ENV_FILE}.",
+            ENV_FILE,
         )
-    lines = CONFIG_FILE.read_text().splitlines()
+        ENV_FILE.touch()
+
+    lines = ENV_FILE.read_text().splitlines()
     updated = False
     new_lines = []
 
@@ -38,31 +40,31 @@ def update_flag(value: bool):
     if not updated:
         new_lines.append(f"DEBUG_ROUTES_ENABLED={'true' if value else 'false'}")
 
-    CONFIG_FILE.write_text("\n".join(new_lines) + "\n")
+    ENV_FILE.write_text("\n".join(new_lines) + "\n")
 
 
 @app.command()
 def enable():
     """Enable debug routes"""
     update_flag(True)
-    typer.echo("✅ Debug routes enabled.")
+    typer.echo("✅ Debug routes enabled. ⚠️ Will take effect after server reload.")
 
 
 @app.command()
 def disable():
     """Disable debug routes"""
     update_flag(False)
-    typer.echo("❌ Debug routes disabled.")
+    typer.echo("❌ Debug routes disabled. ⚠️ Will take effect after server reload.")
 
 
 @app.command()
 def status():
     """Show current debug route status"""
 
-    if not CONFIG_FILE.exists():
-        raise HTTPException(status_code=403, detail="Access denied")
+    if not ENV_FILE.exists():
+        raise HTTPException(status_code=404, detail="NOT_FOUND_FILE")
 
-    lines = CONFIG_FILE.read_text().splitlines()
+    lines = ENV_FILE.read_text().splitlines()
     status = False
     for line in lines:
         if line.startswith("DEBUG_ROUTES_ENABLED="):
