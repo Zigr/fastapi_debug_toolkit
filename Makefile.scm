@@ -8,7 +8,7 @@ PACKAGE_PATH=./backend/packages/fastapi-debug-toolkit
 # Package manager executable (customize if needed)
 PKG_MANAGER=uv
 
-.PHONY: help-scm submodule-add dev-clean
+.PHONY: submodule-add dev-clean
 
 help-scm:
 	@printf "$${BOLD}SCM: Available targets:$${RESET}\n"

@@ -1,6 +1,8 @@
 import os
 from pathlib import Path
 
+from dotenv import load_dotenv
+
 
 def is_docker():
     def text_in_file(text, filename):
@@ -15,6 +17,9 @@ def is_docker():
 
 
 def get_project_root() -> Path:
+    if is_docker():
+        return Path("/app")
+
     # Get the absolute path of the current script
     script_path = Path(__file__).resolve()
 
@@ -46,10 +51,15 @@ def get_backend_folder() -> Path:
 
     # Example: Find the project root by looking for a .git directory
     bakend_root = script_directory
+    print(
+        f"1-st: {not ((bakend_root / backend).exists() and (bakend_root / backend).is_dir())}"
+    )
+    print(f"2-nd: { (bakend_root != backend or bakend_root != bakend_root.anchor)}")
+
     while (
         not ((bakend_root / backend).exists() and (bakend_root / backend).is_dir())
         and (bakend_root != backend or bakend_root != bakend_root.anchor)
-        and backend not in bakend_root.as_uri()
+        # and backend not in bakend_root.as_uri()
     ):
         bakend_root = bakend_root.parent
         print(
@@ -61,38 +71,20 @@ def get_backend_folder() -> Path:
     return bakend_root
 
 
-def get_from_env(name: str | None = None) -> dict | str | None:
-    if name is not None:
-        return os.getenv(name)
-    else:
-        return dict(os.environ)
+def get_env_setting(name: str) -> str | None:
+    return os.getenv(name)
 
 
-def get_env_settings(name: str | None = None) -> str | dict[str, str] | None:
-    if name is not None:
-        f = get_from_env(name)
-        if f is not None:
-            return f  # type: ignore
-    else:
-        f_dic = get_from_env()
-        if f_dic:
-            return f_dic  # type: ignore
+def get_env_settings() -> dict[str, str] | None:
+    f_dic = dict(os.environ)
+    if f_dic:
+        return f_dic  # type: ignore
 
     # For local development try to find in .env file
     bakend_root: Path = get_backend_folder()
     ENV_FILE = Path(bakend_root / ".env")
-    if not Path(bakend_root / ".env").exists:
+    if not Path(bakend_root / ".env").exists():
         return None
-
-    lines = ENV_FILE.read_text().splitlines()
-    tuple_list = []
-    for line in lines:
-        if line.startswith("#"):
-            continue
-        if line.isspace() or not line.strip():
-            continue
-        splitted = line.split("=")
-        tuple_list.append((splitted[0], splitted[1]))
-    result = dict(tuple_list)
-
-    return result if name is None else result[name]
+    load_dotenv(dotenv_path=ENV_FILE, override=True)
+    result = dict(os.environ)
+    return result
