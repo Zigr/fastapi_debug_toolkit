@@ -1,7 +1,7 @@
 # fastapi_debug_toolkit
 
 Debug and diagnostics toolkit for FastAPI apps based on [full-stack-fastapi-template](https://github.com/fastapi/full-stack-fastapi-template/tree/master)
-Provided as editable installable Python module. The project is packaged with [uv](https://docs.astral.sh/uv/) package and project manager. And uses git submodule system
+Provided as editable installable Python module. The project is packaged with [uv](https://docs.astral.sh/uv/) package and project manager. And uses git submodule system.
 
 ![Debuctl animated demo](../assets/debugctl-demo.gif?raw=true "Debuctl demo")
 
@@ -16,7 +16,6 @@ If you have GNU Make >= 4.0, then download and execute <https://raw.githubuserco
 ```bash
 cd $PROJECT_BASE directory
 curl -LO https://raw.githubusercontent.com/Zigr/fastapi_debug_toolkit/refs/heads/master/scripts/download.sh
-chmod a+x ./download.sh
 
 ```
 
@@ -56,7 +55,9 @@ make --file=Makefile.fastapi_debug_toolkit install
 
 ```
 
-⚠️ After package installation is done Dockerfile **changes** should be made as well to copy installed files in a container. This may be done by two ways:
+- ⚠️ You may rename **Makefile.fastapi_debug_toolkit** to **Makefile** simply to get rid of additional make parameters and long filename. Or put it in another folder(see: **make --help**)
+
+- ⚠️ After package installation is done Dockerfile **changes** should be made as well to copy installed files in a container. This may be done by two ways:
 
 - via volume bind moun FOR THE PACKAGE + copying to container, if you install packages folder as a app/ subling folder(default in the makefile example)
 - or simply by copying extra folder in container, if you choose an app/ folder as a package parent.
