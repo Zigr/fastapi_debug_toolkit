@@ -1,9 +1,7 @@
 # fastapi_debug_toolkit
 
----
-
 Debug and diagnostics toolkit for FastAPI apps based on [full-stack-fastapi-template](https://github.com/fastapi/full-stack-fastapi-template/tree/master)
-Provided as editable installable Python module. The project is packaged with [uv](https://docs.astral.sh/uv/) package and project manager.
+Provided as editable installable Python module. The project is packaged with [uv](https://docs.astral.sh/uv/) package and project manager. And uses git submodule system
 
 ![Debuctl animated demo](../assets/debugctl-demo.gif?raw=true "Debuctl demo")
 
@@ -11,74 +9,57 @@ Provided as editable installable Python module. The project is packaged with [uv
 
 ## Installation
 
-⚠️ If installed **as is** from the **current repo**, Dockerfile **changes** should be made as well.
+### The first step
 
----
-
-### Using GNU make tool and Git with fastapi_debug_toolkit in place
-
-Assume, we have a project root folder with $PROJECT_BASE in **./ai-agent**
+If you have GNU Make >= 4.0, then download and execute <https://raw.githubusercontent.com/Zigr/fastapi_debug_toolkit/refs/heads/master/scripts/download.sh> or:
 
 ```bash
-export PROJECT_BASE="$(pwd)/ai-agent" && cd $PROJECT_BASE;
-<!-- # We do not have repo installed in a local path
-#  make --makefile=./backend/app/packages/fastapi_debug_toolkit/Makefile -I $(pwd)/backend/app/packages/fastapi_debug_toolkit help
-# make \
-# --makefile=./backend/app/packages/fastapi_debug_toolkit/Makefile  \
-# -I $(pwd)/backend/app/packages/fastapi_debug_toolkit \
-#  submodule-add --force \
-#  PACKAGE_REPO=https://github.com/Zigr/fastapi_debug_toolkit/ \
-#  PACKAGE_PATH=./backend/packages/fastapi-debug-toolkit
--->
+cd $PROJECT_BASE directory
+curl -LO https://raw.githubusercontent.com/Zigr/fastapi_debug_toolkit/refs/heads/master/scripts/download.sh
+chmod a+x ./download.sh
 
 ```
 
-### Instal from Git repo
+This will download package makefile(Makefile.fastapi_debug_toolkit) and makefile config  variables file(fastapi_debug_toolkit.config.mk)
 
-Assuming we did the steps above and we are in PROJECT_BASE directory:
+### The second step
 
-#### With defaults
+Download makefile(s)
 
 ```bash
-make submodule-add;
-make install;
+chmod a+x ./download.sh
+./download
 
 ```
 
-#### Install as editable package with user defined variables
+This will download **fastapi_debug_toolkit** package makefile(**Makefile.fastapi_debug_toolkit**) and makefile config  variables file(**fastapi_debug_toolkit.config.mk**)
 
-⚠️ The best way to install deps with customizations is to examine $(PROJECT_BASE)/Makefile file. Or use:
+### The third step
+
+- Review makefile config  variables file(**fastapi_debug_toolkit.config.mk**)
+- Run makefile help:
 
 ```bash
-make help
-# OR which is equivalnent to
-make
-# OR
-make list-user-variables
-# OR
-make debug-vvv
+make --file=Makefile.fastapi_debug_toolkit help
 
 ```
 
-See available user defined variables:
+- Adjust variables in the variables file(**fastapi_debug_toolkit.config.mk**) according to your needs
+
+### The forth step
+
+Add repo as a git submodule and install **fastapi_debug_toolkit** package
 
 ```bash
-make list-user-variables
-# OR debug-verbose
-make debug-vvv
+make --file=Makefile.fastapi_debug_toolkit submodule-add
+make --file=Makefile.fastapi_debug_toolkit install
 
 ```
 
-And then define required variables.
-Example:
+⚠️ After package installation is done Dockerfile **changes** should be made as well to copy installed files in a container. This may be done by two ways:
 
-```bash
-make list-user-variables;
-make submodule-add PACKAGE_REPO=https://github.com/Zigr/fastapi_debug_toolkit PACKAGE_PATH=./backend/packages/fastapi-debug-toolkit;
-make install PACKAGE_PATH="./packages/fastapi-debug-toolkit";
-docker compose watch;
-
-```
+- via volume bind moun FOR THE PACKAGE + copying to container, if you install packages folder as a app/ subling folder(default in the makefile example)
+- or simply by copying extra folder in container, if you choose an app/ folder as a package parent.
 
 ## Testing
 
@@ -89,15 +70,15 @@ pytest backend/packages/fastapi-debug-toolkit/tests/
 
 ## Use: debug some configuration
 
-Let us assume we have backend service running after previous step.
-
 ```bash
+docker compose wath # if you do not start it yet
+# Then in another terminal window:
 docker compose ps;
 docker compose logs backend;
 
 ```
 
-Then we may ckeckdebug endpoints:
+Then we may ckeck debug endpoints:
 
 ```bash
 curl http://127.0.0.1:8000/debug/routes         # List all registered routes and tags
@@ -110,9 +91,10 @@ curl http://127.0.0.1:8000/debug/mounts         # LList all mounted sub-apps (DE
 
  ---
 
-## Enable / disable routes debug in production
+## Enable / disable routes debug in dev/production
 
 ```bash
+cd $PROJECT_BASE/YOUR_BACKEND_BASE # the folder with your .venv
 debugctl status
 debugcti enable
 debugcti disable
@@ -122,25 +104,24 @@ debugcti disable
 ## Init in the application
 
 ```python(main script)
-... # your imports
+... # your own imports
 
 try:
     from fastapi_debug_toolkit import debug_router
-    # Code that uses desired_package can go here
-except ImportError:
-    # Code to execute if desired_package is not found
-    print("desired_package not found. Functionality may be limited.")
-    debug_router = None  # Or provide a mock object/alternative implementation
 
-
-... # your code
-
-if debug_router:
+    if debug_router:
     if settings.DEBUG_ROUTES_ENABLED:
         include_debug_docs = settings.ENVIRONMENT == "local"
         app.include_router(
             debug_router, prefix="/debug", include_in_schema=include_debug_docs
         )
+except ImportError:
+    # Code to execute if desired_package is not found
+    print("desired_package not found. Functionality may be limited.")
+    debug_router = None  # Or provide a mock object/alternative implementation
+
+... # another your code
+
 ```
 
 ---
