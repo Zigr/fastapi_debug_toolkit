@@ -3,7 +3,7 @@
 ---
 
 Debug and diagnostics toolkit for FastAPI apps based on [full-stack-fastapi-template](https://github.com/fastapi/full-stack-fastapi-template/tree/master)
-Provided as editable installable Python module. The is packaged with [uv](https://docs.astral.sh/uv/) package and project manager.
+Provided as editable installable Python module. The project is packaged with [uv](https://docs.astral.sh/uv/) package and project manager.
 
 ![Debuctl animated demo](../assets/debugctl-demo.gif?raw=true "Debuctl demo")
 
@@ -28,7 +28,8 @@ export PROJECT_BASE="$(pwd)/ai-agent" && cd $PROJECT_BASE;
 # -I $(pwd)/backend/app/packages/fastapi_debug_toolkit \
 #  submodule-add --force \
 #  PACKAGE_REPO=https://github.com/Zigr/fastapi_debug_toolkit/ \
-#  PACKAGE_PATH=./backend/packages/fastapi-debug-toolkit -->
+#  PACKAGE_PATH=./backend/packages/fastapi-debug-toolkit
+-->
 
 ```
 

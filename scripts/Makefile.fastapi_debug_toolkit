@@ -1,0 +1,154 @@
+PACKAGE_NAME := fastapi-debug-toolkit
+PACKAGE_VERSION := "0.1.0"
+
+# Make sure repo name and package name are the same
+PACKAGE_REPO = https://github.com/Zigr/$(PACKAGE_NAME)
+# Package manager executable (customize if needed)
+PKG_MANAGER = uv
+
+# Base project folder. This is cwd for all targets!
+PROJECT_BASE := "./full-stack-fastapi-template"
+# Backend project folder
+
+# Package paths, relative to project folder
+PACKAGE_PATH = ./backend/packages/$(PACKAGE_NAME)
+
+# Add the requirements to the specified dependency group, --group dev
+#CUSTOM_DEPS="--group dev"
+CUSTOM_DEPS = ""
+
+# Package config file with user defined variables
+PACKAGE_CONFIG ?= ".$(PACKAGE_NAME).config.mk"
+
+# Formatting
+BOLD = \033[1m
+GREEN = \033[32m
+BLUE = \033[34m
+YELLOW = \033[0;33m
+RED = \033[31m
+CYAN = \033[36m
+MAGENTA = \033[35m
+RESET = \033[0m
+LINE = -----------------------------
+
+# 1) Main target(s).
+
+.PHONY: dev-clean help help-main help-scm help-setup install install-full lint submodule-add test test-clean test-watch
+
+help: help-main help-scm help-setup
+
+#
+help-main:
+	@echo "FASTAPI_DEBUG_TOOLKIT: Available targets:"
+	@printf "${CYAN}$(LINE)${RESET}\n"
+	@echo "  None"
+	@echo
+
+# 2) Submodule target(s).
+
+help-scm:
+	@printf "${BOLD}SCM: Available targets:$${RESET}\n"
+	@printf "${CYAN}$(LINE)${RESET}\n"
+	@echo "Current working dir: $(shell pwd)"
+	@echo "  submodule-add          - Add Git submodule if not already added from $(BOLD)$(GREEN)[ PACKAGE_REPO = $(PACKAGE_REPO) ]$(RESET)"
+	@echo "                           to $(BOLD)$(GREEN)[ PACKAGE_PATH = $(PACKAGE_PATH) ]$(RESET)"
+	@echo "  dev-clean              - Clean up .pyc, __pycache__, .mypy_cache, etc."
+	@echo
+
+# Add submodule if not already added
+submodule-add:
+	@if [ ! -d "$(PACKAGE_PATH)" ]; then \
+		@echo; \
+		@echo "$(YELLOW)Adding submodule $(PACKAGE_REPO) to $(PACKAGE_PATH)...$(RESET)"; \
+		git submodule add --force -- $(PACKAGE_REPO) $(PACKAGE_PATH); \
+		git submodule update --init --recursive; \
+		@echo \
+	else \
+		@echo \
+		@echo "$(GREEN)Submodule $(PACKAGE_PATH) already exists. Skipping...$(RESET)"; \
+		@echo
+	fi
+
+dev-clean:
+	find . -type d -name '__pycache__' -exec rm -rf {} +
+	find . -type d -name '.mypy_cache' -exec rm -rf {} +
+	find . -type d -name '.pytest_cache' -exec rm -rf {} +
+	find . -type f -name '*.pyc' -delete
+	find . -type f -name '*.pyo' -delete
+
+# 3) Setup target(s).
+# Install requirements (editable, dev) and sync uv.lock file
+# Customize PKG_MANAGER if needed, e.g. to use pip instead of uv
+
+help-setup:
+	@printf "${BOLD}SETUP: Available targets:${RESET}\n"
+	@printf "${CYAN}$(LINE)${RESET}\n"
+	@echo "  install            - Install dependencies (editable +$(BOLD)$(GREEN)[CUSTOM_DEPS = $(CUSTOM_DEPS)]$(RESET) for $(BOLD)$(GREEN)[PACKAGE_NAME = $(PACKAGE_NAME)]$(RESET)"
+	@echo "                       with $(BOLD)$(GREEN)[PKG_MANAGER = $(PKG_MANAGER)]$(RESET) into $(BOLD)$(GREEN)[PACKAGE_PATH = $(PACKAGE_PATH)]$(RESET)"
+	@echo "  lint               - Lint code with Ruff"
+	@echo "  test               - Run tests once with pytest"
+	@echo "  test-watch         - Watch files & rerun on changes (optional: with pytest-watch)"
+	@echo "  test-clean         - Clean cache files, eg. __pycache__ and .pytest_cache"
+	@echo "  install-full       - Install and check everything"
+	@echo "  list-user-variables- List user-defined variables in Makefile"
+	@echo "  help               - Show this help message"
+	@echo
+
+# Install & Sync dependencies with uv.lock for the given package
+install:
+	@echo
+	@echo "$(BLUE)Installing dependencies for FastAPI Debug Toolkit...$(RESET)"
+	@echo "Current directory: $(shell pwd)"
+	@echo "$(BOLD)Using package manager: $(PKG_MANAGER)$(RESET)"
+	cd $(PACKAGE_PATH) && $(PKG_MANAGER) add --editable $(CUSTOM_DEPS) $(PACKAGE_PATH) && $(PKG_MANAGER) lock --upgrade-package $(PACKAGE_NAME)
+	@echo "$(GREEN)Dependencies installed and uv.lock synced successfully!$(RESET)"
+	$(PKG_MANAGER) pip list
+	@echo
+
+# Lint using Ruff (or flake8)
+lint:
+	ruff --check .
+
+# Test commands
+# Run tests once
+test:
+	$(PKG_MANAGER) pip install . --group test
+	pytest
+
+# Watch files & rerun on changes (optional: with pytest-watch)
+test-watch:
+	$(PKG_MANAGER) pip install --group test . pytest-watch
+	ptw --ext .py
+
+# Clean __pycache__ and .pytest_cache
+test-clean:
+	find . -type d -name "__pycache__" -exec rm -rf {} +
+	rm -rf .pytest_cache
+
+# Setup: install, format, lint, test
+install-full: install lint test
+
+list-user-variables:
+	@echo "Variables in Makefile:"
+	@echo "PACKAGE_NAME = $(PACKAGE_NAME)"
+	@echo "PACKAGE_VERSION = $(PACKAGE_VERSION)"
+	@echo "PACKAGE_REPO = $(PACKAGE_REPO)"
+	@echo "PACKAGE_PATH = $(PACKAGE_PATH)"
+	@echo "PROJECT_BASE = $(PROJECT_BASE)"
+	@echo "PKG_MANAGER = $(PKG_MANAGER)"
+	@echo "CUSTOM_DEPS = $(CUSTOM_DEPS)"
+# Show Makefile state(environment)
+debug-internals:
+	@echo
+	@echo "$(BOLD)$(GREEN)Makefile internal state:$(RESET)"
+	@printf "${CYAN}$(LINE)${RESET}\n"
+	@echo SHELL = $(SHELL)
+	@echo .ONESHELL = $(.ONESHELL)
+	@echo CURDIR= $(CURDIR)
+	@echo "Current working dir: $(shell pwd)"
+	@echo "$(YELLOW)Each time a Makefile is loaded (including via include), its name is appended to this list.$(RESET)"
+	@echo MAKEFILE_LIST =  $(MAKEFILE_LIST)
+	@echo
+
+#  Print debug information about the Makefile and environment
+debug-vvv: debug-internals list-user-variables
