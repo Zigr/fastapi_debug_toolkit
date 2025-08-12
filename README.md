@@ -5,9 +5,12 @@
 Debug and diagnostics toolkit for FastAPI apps based on [full-stack-fastapi-template](https://github.com/fastapi/full-stack-fastapi-template/tree/master)
 Provided as editable installable Python module. The is packaged with [uv](https://docs.astral.sh/uv/) package and project manager.
 
-## Installation
+![Debuctl animated demo](../assets/debugctl-demo.gif?raw=true "Debuctl demo")
 
 ---
+
+## Installation
+
 ⚠️ If installed **as is** from the **current repo**, Dockerfile **changes** should be made as well.
 
 ---
