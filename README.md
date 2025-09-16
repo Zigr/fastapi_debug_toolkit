@@ -55,6 +55,42 @@ make --file=Makefile.fastapi_debug_toolkit install
 
 ```
 
+### The fifth step
+
+Add new environment variable to your main .env file as well as to PydanticSettings, if you used Pydantic.
+
+```text
+DEBUG_ROUTES_ENABLED=false
+
+```
+
+Then you may switch DEBUG_ROUTES_ENABLED variable by means of **debugctl** CLI locally(not in the Docker) for **EVVIRONMENT=local**.
+
+### The seventh step: init package in the main application
+
+```python(main script)
+... # your own imports
+
+try:
+    from fastapi_debug_toolkit import debug_router
+
+    if debug_router:
+    if settings.DEBUG_ROUTES_ENABLED:
+        include_debug_docs = settings.ENVIRONMENT == "local"
+        app.include_router(
+            debug_router, prefix="/debug", include_in_schema=include_debug_docs
+        )
+except ImportError:
+    # Code to execute if desired_package is not found
+    print("desired_package not found. Functionality may be limited.")
+    debug_router = None  # Or provide a mock object/alternative implementation
+
+... # another your code
+
+```
+
+## Notes
+
 - ⚠️ You may rename **Makefile.fastapi_debug_toolkit** to **Makefile** simply to get rid of additional make parameters and long filename. Or put it in another folder(see: **make --help**)
 
 - ⚠️ After package installation is done Dockerfile **changes** should be made as well to copy installed files in a container. This may be done by two ways:
@@ -79,6 +115,16 @@ docker compose logs backend;
 
 ```
 
+## Enable / disable routes debug in local environment
+
+```bash
+cd $PROJECT_BASE/YOUR_BACKEND_BASE # the folder with your .venv
+debugctl status
+debugcti enable
+debugcti disable
+
+```
+
 Then we may ckeck debug endpoints:
 
 ```bash
@@ -91,38 +137,3 @@ curl http://127.0.0.1:8000/debug/mounts         # LList all mounted sub-apps (DE
 ```
 
  ---
-
-## Enable / disable routes debug in dev/production
-
-```bash
-cd $PROJECT_BASE/YOUR_BACKEND_BASE # the folder with your .venv
-debugctl status
-debugcti enable
-debugcti disable
-
-```
-
-## Init in the application
-
-```python(main script)
-... # your own imports
-
-try:
-    from fastapi_debug_toolkit import debug_router
-
-    if debug_router:
-    if settings.DEBUG_ROUTES_ENABLED:
-        include_debug_docs = settings.ENVIRONMENT == "local"
-        app.include_router(
-            debug_router, prefix="/debug", include_in_schema=include_debug_docs
-        )
-except ImportError:
-    # Code to execute if desired_package is not found
-    print("desired_package not found. Functionality may be limited.")
-    debug_router = None  # Or provide a mock object/alternative implementation
-
-... # another your code
-
-```
-
----

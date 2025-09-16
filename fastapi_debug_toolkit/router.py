@@ -3,10 +3,11 @@ from typing import Any
 from fastapi import APIRouter, HTTPException, Request
 
 # from app.core.config import settings
-from fastapi_debug_toolkit.util import get_env_setting, get_env_settings
-
-# if isinstance(is_local, dict):
-#     print(settings.get("ENVIRONMENT"))
+from fastapi_debug_toolkit.util import (
+    get_env_setting,
+    get_env_settings,
+    is_debug_routes_set,
+)
 
 router = APIRouter(tags=["debug"])
 
@@ -28,6 +29,11 @@ def dev_only():
         raise HTTPException(status_code=403, detail="Access denied in production")
 
 
+def is_debug_routes_enabled():
+    if not is_debug_routes_set():
+        raise HTTPException(status_code=403, detail="Forbidden")
+
+
 @router.get(
     "/config",
     summary="Expose current app settings (DEV ONLY)",
@@ -35,6 +41,7 @@ def dev_only():
 )
 def get_full_settings() -> dict[str, str] | None:
     dev_only()
+    is_debug_routes_enabled()
     return get_env_settings()
 
 
@@ -45,6 +52,7 @@ def get_full_settings() -> dict[str, str] | None:
 )
 def list_routes(request: Request):
     # dev_only()
+    is_debug_routes_enabled()
     app = request.app
     routes_info: list[dict[str, Any]] = []
 
@@ -72,6 +80,7 @@ def list_routes(request: Request):
 )
 def list_middlewares(request: Request):
     dev_only()
+    is_debug_routes_enabled()
     app = request.app
     middlewares_info: list[dict[str, Any]] = []
 
@@ -93,6 +102,7 @@ def list_middlewares(request: Request):
 )
 def list_event_handlers(request: Request):
     dev_only()
+    is_debug_routes_enabled()
     app = request.app
 
     startup_handlers = [f.__name__ for f in app.router.on_startup]
@@ -111,6 +121,7 @@ def list_event_handlers(request: Request):
 )
 def list_mounted_apps(request: Request):
     dev_only()
+    is_debug_routes_enabled()
     app = request.app
     mounts = []
 
