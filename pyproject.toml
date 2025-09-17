@@ -10,6 +10,16 @@ requires-python = ">=3.10"
 [project.scripts]
 debugctl = "fastapi_debug_toolkit.debugctl.cli:app"
 
+# Ignore missing imports for packages that do not provide type hints
+# (you can remove these lines as the packages add type hints)
+# see https://mypy.readthedocs.io/en/stable/running_mypy.html#missing-imports
+# This should be kept in sync with the main project's mypy config or main project pyproject.toml
+# [[tool.mypy.overrides]]
+# module = ["fastapi_debug_toolkit.*"]
+# ignore_missing_imports = true
+# OR
+# Add empty py.typed file to the subpackage root directory(with the __init__.py file)
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
